@@ -1,0 +1,31 @@
+---
+# tasks file for tomcat
+  - name: install java
+    yum: name=java-1.8.0-openjdk state=present
+  - name: Download Tomcat
+    get_url: url=https://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.40/bin/apache-tomcat-9.0.40.tar.gz dest=/home/ec2-user
+  - name: remove tomcat
+    command: rm -rf /home/ec2-user/tomcat
+  - name: Extract the file downloaded tomcat file
+    command: tar xvf apache-tomcat-9.0.40.tar.gz
+  - name: Move the tomcat directory to smaller
+    command: mv apache-tomcat-9.0.40 tomcat
+  - name: Remove tomcat tar file
+    command: rm -rf /home/ec2-user/apache-tomcat-9.0.40.tar.gz
+  - name: Change and ownership permissions of the tomcat directory
+    file: path=/home/ec2-user/tomcat owner=ec2-user group=ec2-user mode=775 state=directory recurse=yes
+    ignore_errors: yes
+  - name: Check list of files
+    command: "{{ item }}"
+    with_items:
+      - cd /home/ec2-user
+      - ls -l
+  - name: List of files
+    shell: ls -l
+    register: shell_result
+  - debug:
+      var: shell_result.stdout_lines
+  - name: Start tomcat
+    command: nohup /home/ec2-user/tomcat/bin/startup.sh #Execute command
+    become: yes
+    become_user: ec2-user
