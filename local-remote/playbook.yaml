@@ -1,0 +1,15 @@
+- hosts: all
+  tasks:
+  - name: copy local files to remote location
+    synchronize:
+      src: ../ansible-adv-ids/adv_units/
+      dest: /var/tmp/adv_units/
+    register: files
+  - name: backup files
+    shell: |
+      mkdir -p /tmp/backups/adv_units_backup_$(date +"%Y%m%d%H%M%S");
+      cp -r /var/tmp/adv_units/* $_
+    args:
+     executable: /bin/bash
+     warn: no
+    when: files.changed
