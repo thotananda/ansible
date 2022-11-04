@@ -1,0 +1,10 @@
+- hosts: localhost
+  tasks:
+    - name: loop iterate
+      shell: la -l
+      register: output
+      until: "output is not failed"
+      retries: 10
+      delay: 10
+    - debug:
+       msg: "{{ output }}"  
